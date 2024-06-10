@@ -55,3 +55,37 @@ def test_calculation_get_details():
     calculation = Calculation("+", 10, 5, 15)
     details = calculation.get_details()
     assert details == ("+", 10, 5, 15)
+
+def test_calculation_repr():
+    """
+    Test the __repr__ method of the Calculation class.
+    """
+    calculation = Calculation("+", 10, 5, 15)
+    expected_repr = "10 + 5 = 15"
+    assert repr(calculation) == expected_repr
+
+def test_calculator_initialization():
+    """
+    Test the initialization of the Calculator class.
+    """
+    calculator = Calculator()
+    assert calculator.result == 0
+
+def test_get_last_calculation():
+    """
+    Test the get_last_calculation method of the Calculator class.
+    """
+    Calculator.clear_history()
+    assert Calculator.get_last_calculation() is None  # History is empty, should return None
+
+    Calculator.add(2, 3)
+    Calculator.add(4, 5)
+    last_calc = Calculator.get_last_calculation()
+    assert last_calc is not None
+    assert last_calc.operation == "+"
+    assert last_calc.x == 4
+    assert last_calc.y == 5
+    assert last_calc.result == 9
+
+    Calculator.clear_history()
+    assert Calculator.get_last_calculation() is None

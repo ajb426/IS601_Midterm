@@ -1,3 +1,14 @@
+"""
+Test suite for the Calculator and Calculation classes.
+
+This module contains tests for the following functionalities:
+- Basic arithmetic operations (add, subtract, multiply, divide)
+- Exception handling for division by zero
+- History management
+- String representation and detail retrieval
+- Initialization of Calculator instances
+"""
+
 import pytest
 from calculator import Calculator, Calculation
 
@@ -7,6 +18,9 @@ from calculator import Calculator, Calculation
     (0, 0, 0),
 ])
 def test_add(x, y, expected):
+    """
+    Test the add method of the Calculator class.
+    """
     assert Calculator.add(x, y) == expected
 
 @pytest.mark.parametrize("x, y, expected", [
@@ -15,6 +29,9 @@ def test_add(x, y, expected):
     (0, 0, 0),
 ])
 def test_subtract(x, y, expected):
+    """
+    Test the subtract method of the Calculator class.
+    """
     assert Calculator.subtract(x, y) == expected
 
 @pytest.mark.parametrize("x, y, expected", [
@@ -23,6 +40,9 @@ def test_subtract(x, y, expected):
     (0, 5, 0),
 ])
 def test_multiply(x, y, expected):
+    """
+    Test the multiply method of the Calculator class.
+    """
     assert Calculator.multiply(x, y) == expected
 
 @pytest.mark.parametrize("x, y, expected", [
@@ -31,12 +51,21 @@ def test_multiply(x, y, expected):
     (0, 5, 0.0),
 ])
 def test_divide(x, y, expected):
+    """
+    Test the divide method of the Calculator class.
+    """
     assert Calculator.divide(x, y) == expected
 
 def test_divide_by_zero():
+    """
+    Test division by zero in the Calculator class.
+    """
     assert Calculator.divide(10, 0) == "Error: Division by zero is not allowed."
 
 def test_history():
+    """
+    Test the history management methods of the Calculator class.
+    """
     Calculator.clear_history()
     Calculator.add(1, 1)
     Calculator.subtract(2, 1)
@@ -45,6 +74,9 @@ def test_history():
     assert len(Calculator.get_history()) == 0
 
 def test_last_calculation():
+    """
+    Test the get_last_calculation method of the Calculator class.
+    """
     Calculator.clear_history()
     Calculator.add(3, 3)
     last_calc = Calculator.get_last_calculation()
@@ -52,6 +84,9 @@ def test_last_calculation():
     assert last_calc.result == 6
 
 def test_calculation_get_details():
+    """
+    Test the get_details method of the Calculation class.
+    """
     calculation = Calculation("+", 10, 5, 15)
     details = calculation.get_details()
     assert details == ("+", 10, 5, 15)

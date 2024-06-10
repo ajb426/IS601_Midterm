@@ -1,3 +1,6 @@
+import pytest
+from calculator import Calculator, Calculation
+
 @pytest.mark.parametrize("x, y, expected", [
     (10, 5, 15),
     (-1, -1, -2),
@@ -47,3 +50,8 @@ def test_last_calculation():
     last_calc = Calculator.get_last_calculation()
     assert last_calc is not None
     assert last_calc.result == 6
+
+def test_calculation_get_details():
+    calculation = Calculation("+", 10, 5, 15)
+    details = calculation.get_details()
+    assert details == ("+", 10, 5, 15)

@@ -1,7 +1,7 @@
 # calculator/plugin_manager.py
 import importlib
 import os
-from .command import Command
+from calculator.command import Command
 
 class PluginManager:
     def __init__(self, command_dict):

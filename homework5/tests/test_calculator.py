@@ -10,7 +10,8 @@ This module contains tests for the following functionalities:
 """
 
 import pytest
-from calculator import Calculator, Calculation
+from calculator.calculator import Calculator
+from calculator.calculation import Calculation
 
 @pytest.mark.parametrize("x, y, expected", [
     (10, 5, 15),
@@ -124,3 +125,4 @@ def test_get_last_calculation():
 
     Calculator.clear_history()
     assert Calculator.get_last_calculation() is None
+    

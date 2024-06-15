@@ -1,4 +1,5 @@
 from calculator.command import AddCommand, SubtractCommand, MultiplyCommand, DivideCommand, GetHistoryCommand, ClearHistoryCommand, GetLastCalculationCommand
+from calculator.plugin_manager import PluginManager
 
 class CalculatorREPL:
     def __init__(self):
@@ -9,10 +10,15 @@ class CalculatorREPL:
             'divide': DivideCommand(),
             'history': GetHistoryCommand(),
             'clear_history': ClearHistoryCommand(),
-            'last': GetLastCalculationCommand(),
+            'last': GetLastCalculationCommand()        
         }
+        
+        self.plugin_manager = PluginManager(self.commands)
+        self.plugin_manager.load_plugins()
 
     def start(self):
+        if 'menu' in self.commands:
+            self.commands['menu'].execute()
         print("Calculator REPL. Type 'exit' to quit.")
         while True:
             user_input = input("Enter command: ").split()

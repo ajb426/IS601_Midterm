@@ -1,7 +1,7 @@
-# calculator/plugin_manager.py
 import importlib
 import os
 from calculator.command import Command
+import inspect
 
 class PluginManager:
     def __init__(self, command_dict):
@@ -14,4 +14,11 @@ class PluginManager:
                 module = importlib.import_module(f"calculator.plugins.{module_name}")
                 for name, obj in module.__dict__.items():
                     if isinstance(obj, type) and issubclass(obj, Command) and obj != Command:
-                        self.command_dict[name.lower()] = obj()
+                        # Simplify command name
+                        command_name = name.lower().replace('command', '')
+                        init_params = inspect.signature(obj.__init__).parameters
+                        if 'command_dict' in init_params:
+                            self.command_dict[command_name] = obj(self.command_dict)
+                        else:
+                            self.command_dict[command_name] = obj()
+                        print(f"Loaded plugin command: {command_name}")  # Debugging line

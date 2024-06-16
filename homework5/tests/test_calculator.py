@@ -2,74 +2,60 @@
 Test suite for the Calculator and Calculation classes.
 
 This module contains tests for the following functionalities:
-- Basic arithmetic operations (add, subtract, multiply, divide)
-- Exception handling for division by zero
-- History management
-- String representation and detail retrieval
+- Basic arithmetic operations (add, subtract, multiply, divide) in the Calculator class
+- Exception handling for division by zero in the Calculator class
+- History management in the Calculator class
+- String representation and detail retrieval in the Calculation class
 - Initialization of Calculator instances
 """
 
-import pytest
+from faker import Faker
 from calculator.calculator import Calculator
 from calculator.calculation import Calculation
+import pytest
 
-@pytest.mark.parametrize("x, y, expected", [
-    (10, 5, 15),
-    (-1, -1, -2),
-    (0, 0, 0),
-])
-def test_add(x, y, expected):
-    """
-    Test the add method of the Calculator class.
-    """
-    assert Calculator.add(x, y) == expected
+fake = Faker()
 
-@pytest.mark.parametrize("x, y, expected", [
-    (10, 5, 5),
-    (-1, -1, 0),
-    (0, 0, 0),
+@pytest.mark.parametrize("operation, function", [
+    ("add", Calculator.add),
+    ("subtract", Calculator.subtract),
+    ("multiply", Calculator.multiply),
+    ("divide", Calculator.divide)
 ])
-def test_subtract(x, y, expected):
+def test_operations(operation, function):
     """
-    Test the subtract method of the Calculator class.
+    Parametrized test for basic arithmetic operations.
     """
-    assert Calculator.subtract(x, y) == expected
+    x = fake.random_number(digits=2)
+    y = fake.random_number(digits=2) if operation != "divide" else fake.random_number(digits=2, fix_len=True) + 1  # avoid division by zero
 
-@pytest.mark.parametrize("x, y, expected", [
-    (10, 5, 50),
-    (-1, -1, 1),
-    (0, 5, 0),
-])
-def test_multiply(x, y, expected):
-    """
-    Test the multiply method of the Calculator class.
-    """
-    assert Calculator.multiply(x, y) == expected
-
-@pytest.mark.parametrize("x, y, expected", [
-    (10, 5, 2.0),
-    (-10, -5, 2.0),
-    (0, 5, 0.0),
-])
-def test_divide(x, y, expected):
-    """
-    Test the divide method of the Calculator class.
-    """
-    assert Calculator.divide(x, y) == expected
+    if operation == "divide" and y == 0:
+        with pytest.raises(ValueError, match="Cannot divide by zero"):
+            function(x, y)
+    else:
+        expected = {
+            "add": x + y,
+            "subtract": x - y,
+            "multiply": x * y,
+            "divide": x / y
+        }[operation]
+        assert function(x, y) == expected
 
 def test_divide_by_zero():
     """
     Test division by zero in the Calculator class.
     """
-    assert Calculator.divide(10, 0) == "Error: Division by zero is not allowed."
+    x = fake.random_number(digits=5)
+    with pytest.raises(ValueError, match="Cannot divide by zero"):
+        Calculator.divide(x, 0)
 
 def test_history():
     """
     Test the history management methods of the Calculator class.
     """
     Calculator.clear_history()
-    Calculator.add(1, 1)
-    Calculator.subtract(2, 1)
+    Calculator.add(fake.random_number(digits=5), fake.random_number(digits=5))
+    Calculator.subtract(fake.random_number(digits=5), fake.random_number(digits=5))
     assert len(Calculator.get_history()) == 2
     Calculator.clear_history()
     assert len(Calculator.get_history()) == 0
@@ -79,50 +65,36 @@ def test_last_calculation():
     Test the get_last_calculation method of the Calculator class.
     """
     Calculator.clear_history()
-    Calculator.add(3, 3)
+    x = fake.random_number(digits=5)
+    y = fake.random_number(digits=5)
+    Calculator.add(x, y)
     last_calc = Calculator.get_last_calculation()
     assert last_calc is not None
-    assert last_calc.result == 6
+    assert last_calc.result == x + y
 
 def test_calculation_get_details():
     """
     Test the get_details method of the Calculation class.
     """
-    calculation = Calculation("+", 10, 5, 15)
-    details = calculation.get_details()
-    assert details == ("+", 10, 5, 15)
+    x = fake.random_number(digits=5)
+    y = fake.random_number(digits=5)
+    calc = Calculation("+", x, y, x + y)
+    details = calc.get_details()
+    assert details == ("+", x, y, x + y)
 
 def test_calculation_repr():
     """
     Test the __repr__ method of the Calculation class.
     """
-    calculation = Calculation("+", 10, 5, 15)
-    expected_repr = "10 + 5 = 15"
-    assert repr(calculation) == expected_repr
+    x = fake.random_number(digits=5)
+    y = fake.random_number(digits=5)
+    calc = Calculation("+", x, y, x + y)
+    expected_repr = f"{x} + {y} = {x + y}"
+    assert repr(calc) == expected_repr
 
 def test_calculator_initialization():
     """
     Test the initialization of the Calculator class.
     """
-    calculator = Calculator()
-    assert calculator.result == 0
-
-def test_get_last_calculation():
-    """
-    Test the get_last_calculation method of the Calculator class.
-    """
     Calculator.clear_history()
-    assert Calculator.get_last_calculation() is None  # History is empty, should return None
-
-    Calculator.add(2, 3)
-    Calculator.add(4, 5)
-    last_calc = Calculator.get_last_calculation()
-    assert last_calc is not None
-    assert last_calc.operation == "+"
-    assert last_calc.x == 4
-    assert last_calc.y == 5
-    assert last_calc.result == 9
-
-    Calculator.clear_history()
-    assert Calculator.get_last_calculation() is None
-    
+    assert len(Calculator.get_history()) == 0

@@ -98,3 +98,9 @@ def test_calculator_initialization():
     """
     Calculator.clear_history()
     assert len(Calculator.get_history()) == 0
+
+def test_get_last_calculation_empty():
+    """Test get_last_calculation when history is empty."""
+    Calculator.clear_history()
+    result = Calculator.get_last_calculation()
+    assert result is None

@@ -1,13 +1,29 @@
-import importlib
+"""
+Plugin Manager module for loading calculator command plugins dynamically.
+"""
+
 import os
-from calculator.command import Command
+import importlib
 import inspect
+from calculator.command import Command
 
 class PluginManager:
+    """
+    Manages loading of command plugins for the calculator.
+    """
     def __init__(self, command_dict):
+        """
+        Initializes the PluginManager with a dictionary of commands.
+
+        Args:
+            command_dict (dict): Dictionary to store the loaded commands.
+        """
         self.command_dict = command_dict
 
     def load_plugins(self, plugin_folder='calculator/plugins'):
+        """
+        Loads plugins from the plugins directory and updates the command dictionary.
+        """
         for filename in os.listdir(plugin_folder):
             if filename.endswith(".py"):
                 module_name = filename[:-3]

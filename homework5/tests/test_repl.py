@@ -127,3 +127,12 @@ def test_repl_empty_input(capfd, monkeypatch):
     print(out)
     # Check that the REPL handles empty input by continuing the loop
     assert "Calculator REPL. Type 'exit' to quit." in out
+
+def test_repl_type_error(capfd, monkeypatch):
+    """Test the REPL handling of TypeError."""
+    inputs = iter(['add 3 four', 'exit'])
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    repl = CalculatorREPL()
+    repl.start()
+    out, err = capfd.readouterr()
+    assert "Error: could not convert string to float: 'four'" in out

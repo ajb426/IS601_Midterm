@@ -6,6 +6,7 @@ import os
 import importlib
 import inspect
 from calculator.command import Command
+import logging
 
 class PluginManager:
     """
@@ -24,6 +25,7 @@ class PluginManager:
         """
         Loads plugins from the plugins directory and updates the command dictionary.
         """
+        loaded_commands = []
         for filename in os.listdir(plugin_folder):
             if filename.endswith(".py"):
                 module_name = filename[:-3]
@@ -37,4 +39,8 @@ class PluginManager:
                             self.command_dict[command_name] = obj(self.command_dict)
                         else:
                             self.command_dict[command_name] = obj()
-                        print(f"Loaded plugin command: {command_name}")  # Debugging line
+                        loaded_commands.append(command_name)
+        if loaded_commands:
+            logging.info(f"Loaded plugin commands: {loaded_commands}")
+        else:
+            logging.info("No plugin commands loaded.")

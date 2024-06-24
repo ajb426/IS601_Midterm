@@ -1,2 +1,2 @@
-## Homework 5 Directory
-Directory with files for Homework 5
+## Homework 6 Directory
+Directory with files for Homework 6

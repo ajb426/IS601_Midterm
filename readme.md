@@ -1,2 +1,2 @@
-## IS601 Project Directory
-Root directory for HW3
+## Homework 5 Directory
+Directory with files for Homework 5

@@ -1,59 +1,52 @@
-"""
-REPL (Read-Eval-Print Loop) for the Calculator application.
-"""
+import logging
 
-from calculator.command import (AddCommand, SubtractCommand, MultiplyCommand, DivideCommand,
-                                GetHistoryCommand, ClearHistoryCommand, GetLastCalculationCommand)
-from calculator.plugin_manager import PluginManager
 
 class CalculatorREPL:
-    """
-    A REPL class to interact with the Calculator through commands.
-    """
-    def __init__(self):
-        """
-        Initialize the REPL with available commands.
-        """
-        self.commands = {
-            'add': AddCommand(),
-            'subtract': SubtractCommand(),
-            'multiply': MultiplyCommand(),
-            'divide': DivideCommand(),
-            'history': GetHistoryCommand(),
-            'clear_history': ClearHistoryCommand(),
-            'last': GetLastCalculationCommand()        
-        }
-        self.plugin_manager = PluginManager(self.commands)
-        self.plugin_manager.load_plugins()
+    def __init__(self, commands):
+        self.commands = commands
 
     def start(self):
-        """
-        Start the REPL loop, taking user input and executing commands.
-        """
         if 'menu' in self.commands:
             self.commands['menu'].execute()
+        logging.info("Calculator REPL started")
         print("Calculator REPL. Type 'exit' to quit.")
         while True:
             user_input = input("Enter command: ").split()
             if not user_input:
                 continue
-            command_name, *args = user_input
-            if command_name.lower() == 'exit':
+
+            command_name = user_input[0].lower()
+            if command_name == 'exit':
+                logging.info("Exiting REPL")
                 print("Exiting REPL...")
                 break
-            command = self.commands.get(command_name)
-            if command:
+
+            try:
+                args = list(map(float, user_input[1:]))
+            except ValueError as e:
+                logging.error("Invalid input: %s", e)
+                print(f"Error: {e}")
+                continue
+
+            if command_name in self.commands:
+                command = self.commands[command_name]
                 try:
-                    result = command.execute(*map(float, args))
-                    print(f"Result: {result}")
-                except ValueError as e:
-                    print(f"Error: {e}")
-                except TypeError as e:
+                    result = command.execute(*args)
+                    if result is not None:
+                        if isinstance(result, list):
+                            for item in result:
+                                print(item)
+                        else:
+                            print(f"Result: {result}")
+                    logging.info("Executed command '%s' with args %s: Result %s", command_name, args, result)
+                except Exception as e:
+                    logging.error("Error executing command '%s': %s", command_name, e)
                     print(f"Error: {e}")
             else:
+                logging.warning("Unknown command: %s", command_name)
                 print("Unknown command")
 
-
 if __name__ == "__main__":
-    repl = CalculatorREPL()
-    repl.start()
+    from calculator import CalculatorApp
+    app = CalculatorApp()
+    app.start()

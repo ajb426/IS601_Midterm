@@ -3,12 +3,16 @@ Calculator module for performing basic arithmetic operations and managing calcul
 """
 
 from calculator.calculation import Calculation
+import pandas as pd
 
 class Calculator:
     """
     A calculator class to perform arithmetic operations and manage calculation history.
     """
-    history = []
+
+    def __init__(self):
+        self.history = pd.DataFrame(columns=['operation', 'operand1', 'operand2', 'result'])
+    
 
     @staticmethod
     @staticmethod
@@ -81,7 +85,7 @@ class Calculator:
         return result
 
     @classmethod
-    def _store_calculation(cls, operation, operand1, operand2, result):
+    def _store_calculation(self, operation, operand1, operand2, result):
         """
         Store a calculation in the history.
 
@@ -91,34 +95,39 @@ class Calculator:
             operand2 (float): The second operand.
             result (float): The result of the operation.
         """
-        calculation = Calculation(operation, operand1, operand2, result)
-        cls.history.append(calculation)
+        new_record = pd.DataFrame([[operation, operand1, operand2, result]], columns=['operation', 'operand1', 'operand2', 'result'])
+        self.history = pd.concat([self.history, new_record], ignore_index=True)
 
     @classmethod
-    def get_history(cls):
+    def get_history(self):
         """
         Get the history of calculations.
 
         Returns:
             list: A list of all Calculation instances.
         """
-        return cls.history
+        return self.history
 
     @classmethod
-    def clear_history(cls):
+    def clear_history(self):
         """
         Clear the history of calculations.
         """
-        cls.history = []
-
+        self.history = pd.DataFrame(columns=['operation', 'operand1', 'operand2', 'result'])
     @classmethod
-    def get_last_calculation(cls):
+    def get_last_calculation(self):
         """
         Get the last calculation from the history.
 
         Returns:
             Calculation: The last Calculation instance, or None if the history is empty.
         """
-        if cls.history:
-            return cls.history[-1]
+        if not self.history.empty:
+            return self.history.iloc[-1]
         return None
+
+    def save_history_to_csv(self, file_path):
+        self.history.to_csv(file_path, index=False)
+
+    def load_history_from_csv(self, file_path):
+        self.history = pd.read_csv(file_path)

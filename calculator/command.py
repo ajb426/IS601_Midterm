@@ -2,121 +2,75 @@
 Command module for the calculator application. Defines commands for various arithmetic operations.
 """
 
+from abc import ABC, abstractmethod
 from calculator.calculator import Calculator
 
-class Command:
-    """
-    Base Command class that all other commands inherit from.
-    """
+class Command(ABC):
+    @abstractmethod
     def execute(self, *args):
-        """
-        Execute the command with the provided arguments.
-
-        Args:
-            *args: Variable length argument list.
-        """
-
+        pass
 
 class AddCommand(Command):
-    """
-    Command to add two numbers.
-    """
-    def execute(self, operand1, operand2):
-        """
-        Execute the add command.
+    def __init__(self, calculator):
+        self.calculator = calculator
 
-        Args:
-            operand1 (float): The first number.
-            operand2 (float): The second number.
-
-        Returns:
-            float: The result of adding operand1 and operand2.
-        """
-        return Calculator.add(operand1, operand2)
+    def execute(self, x, y):
+        return self.calculator.add(x, y)
 
 class SubtractCommand(Command):
-    """
-    Command to subtract one number from another.
-    """
-    def execute(self, operand1, operand2):
-        """
-        Execute the subtract command.
+    def __init__(self, calculator):
+        self.calculator = calculator
 
-        Args:
-            operand1 (float): The first number.
-            operand2 (float): The second number.
-
-        Returns:
-            float: The result of subtracting operand2 from operand1.
-        """
-        return Calculator.subtract(operand1, operand2)
+    def execute(self, x, y):
+        return self.calculator.subtract(x, y)
 
 class MultiplyCommand(Command):
-    """
-    Command to multiply two numbers.
-    """
-    def execute(self, operand1, operand2):
-        """
-        Execute the multiply command.
+    def __init__(self, calculator):
+        self.calculator = calculator
 
-        Args:
-            operand1 (float): The first number.
-            operand2 (float): The second number.
-
-        Returns:
-            float: The result of multiplying operand1 by operand2.
-        """
-        return Calculator.multiply(operand1, operand2)
+    def execute(self, x, y):
+        return self.calculator.multiply(x, y)
 
 class DivideCommand(Command):
-    """
-    Command to divide one number by another.
-    """
-    def execute(self, operand1, operand2):
-        """
-        Execute the divide command.
+    def __init__(self, calculator):
+        self.calculator = calculator
 
-        Args:
-            operand1 (float): The first number.
-            operand2 (float): The second number.
-
-        Returns:
-            float: The result of dividing operand1 by operand2.
-
-        Raises:
-            ValueError: If operand2 is zero.
-        """
-        return Calculator.divide(operand1, operand2)
+    def execute(self, x, y):
+        return self.calculator.divide(x, y)
 
 class GetHistoryCommand(Command):
-    """
-    Command to get the history of calculations.
-    """
-    def execute(self):
-        """
-        Execute the get history command.
+    def __init__(self, calculator):
+        self.calculator = calculator
 
-        Returns:
-            list: The history of calculations.
-        """
-        return Calculator.get_history()
+    def execute(self):
+        return self.calculator.get_history()
 
 class ClearHistoryCommand(Command):
-    """
-    Command to clear the history of calculations.
-    """
+    def __init__(self, calculator):
+        self.calculator = calculator
+
     def execute(self):
-        """
-        Execute the clear history command.
-        """
-        return Calculator.clear_history()
+        self.calculator.clear_history()
 
 class GetLastCalculationCommand(Command):
-    """
-    Command to get last calculation.
-    """
+    def __init__(self, calculator):
+        self.calculator = calculator
+
     def execute(self):
-        """
-        Execte the get last calculation command.
-        """
-        return Calculator.get_last_calculation()
+        return self.calculator.get_last_calculation()
+
+class SaveHistoryCommand(Command):
+    def __init__(self, calculator):
+        self.calculator = calculator
+
+    def execute(self, *args):
+        file_path = " ".join(args)
+        self.calculator.save_history_to_csv(file_path)
+
+class LoadHistoryCommand(Command):
+    def __init__(self, calculator):
+        self.calculator = calculator
+
+    def execute(self, *args):
+        file_path = " ".join(args)
+        self.calculator.load_history_from_csv(file_path)

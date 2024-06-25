@@ -1,5 +1,5 @@
 import logging
-
+import pandas as pd
 
 class CalculatorREPL:
     def __init__(self, commands):
@@ -21,21 +21,22 @@ class CalculatorREPL:
                 print("Exiting REPL...")
                 break
 
-            try:
-                args = list(map(float, user_input[1:]))
-            except ValueError as e:
-                logging.error("Invalid input: %s", e)
-                print(f"Error: {e}")
-                continue
+            args = []
+            for arg in user_input[1:]:
+                try:
+                    args.append(float(arg) if arg.replace('.', '', 1).isdigit() else arg)
+                except ValueError:
+                    args.append(arg)
 
             if command_name in self.commands:
                 command = self.commands[command_name]
                 try:
                     result = command.execute(*args)
                     if result is not None:
-                        if isinstance(result, list):
-                            for item in result:
-                                print(item)
+                        if isinstance(result, pd.DataFrame):
+                            print(result.to_string(index=False))
+                        elif isinstance(result, pd.Series):
+                            print(result.to_string())
                         else:
                             print(f"Result: {result}")
                     logging.info("Executed command '%s' with args %s: Result %s", command_name, args, result)
@@ -46,7 +47,3 @@ class CalculatorREPL:
                 logging.warning("Unknown command: %s", command_name)
                 print("Unknown command")
 
-if __name__ == "__main__":
-    from calculator import CalculatorApp
-    app = CalculatorApp()
-    app.start()

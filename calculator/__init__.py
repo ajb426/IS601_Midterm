@@ -16,7 +16,7 @@ class CalculatorApp:
         self.settings.setdefault('ENVIRONMENT', 'PRODUCTION')
         self.calculator = Calculator()
         self.commands = self.initialize_default_commands()
-        self.plugin_manager = PluginManager(self.commands)
+        self.plugin_manager = PluginManager(self.commands, self.calculator)
         self.load_plugins()
 
     def configure_logging(self):

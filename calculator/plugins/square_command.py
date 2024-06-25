@@ -1,8 +1,10 @@
 from calculator.command import Command
-from calculator.calculator import Calculator
 
 class SquareCommand(Command):
+    def __init__(self, calculator):
+        self.calculator = calculator
+
     def execute(self, operand):
         result = operand * operand
-        Calculator._store_calculation("square", operand, operand, result)
+        self.calculator._store_calculation("square", operand, operand, result)
         return result

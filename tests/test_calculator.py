@@ -1,106 +1,98 @@
-"""
-Test suite for the Calculator and Calculation classes.
-
-This module contains tests for the following functionalities:
-- Basic arithmetic operations (add, subtract, multiply, divide) in the Calculator class
-- Exception handling for division by zero in the Calculator class
-- History management in the Calculator class
-- String representation and detail retrieval in the Calculation class
-- Initialization of Calculator instances
-"""
-
-from faker import Faker
-from calculator.calculator import Calculator
-from calculator.calculation import Calculation
 import pytest
+from calculator.command import AddCommand, SubtractCommand, MultiplyCommand, DivideCommand, GetHistoryCommand, ClearHistoryCommand, GetLastCalculationCommand
+from calculator.calculator import Calculator
 
-fake = Faker()
+@pytest.fixture
+def calculator():
+    return Calculator()
 
-@pytest.mark.parametrize("operation, function", [
-    ("add", Calculator.add),
-    ("subtract", Calculator.subtract),
-    ("multiply", Calculator.multiply),
-    ("divide", Calculator.divide)
-])
-def test_operations(operation, function):
-    """
-    Parametrized test for basic arithmetic operations.
-    """
-    x = fake.random_number(digits=2)
-    y = fake.random_number(digits=2) if operation != "divide" else fake.random_number(digits=2, fix_len=True) + 1  # avoid division by zero
+@pytest.fixture(autouse=True)
+def setup(calculator):
+    calculator.clear_history()  # Ensure history is clear before each test
 
-    if operation == "divide" and y == 0:
-        with pytest.raises(ValueError, match="Cannot divide by zero"):
-            function(x, y)
-    else:
-        expected = {
-            "add": x + y,
-            "subtract": x - y,
-            "multiply": x * y,
-            "divide": x / y
-        }[operation]
-        assert function(x, y) == expected
+# Test Calculator methods directly
+def test_add_method(calculator):
+    assert calculator.add(3, 2) == 5
 
-def test_divide_by_zero():
-    """
-    Test division by zero in the Calculator class.
-    """
-    x = fake.random_number(digits=5)
+def test_subtract_method(calculator):
+    assert calculator.subtract(5, 3) == 2
+
+def test_multiply_method(calculator):
+    assert calculator.multiply(4, 3) == 12
+
+def test_divide_method(calculator):
+    assert calculator.divide(8, 2) == 4
+
+def test_divide_by_zero_method(calculator):
     with pytest.raises(ValueError, match="Cannot divide by zero"):
-        Calculator.divide(x, 0)
+        calculator.divide(8, 0)
 
-def test_history():
-    """
-    Test the history management methods of the Calculator class.
-    """
-    Calculator.clear_history()
-    Calculator.add(fake.random_number(digits=5), fake.random_number(digits=5))
-    Calculator.subtract(fake.random_number(digits=5), fake.random_number(digits=5))
-    assert len(Calculator.get_history()) == 2
-    Calculator.clear_history()
-    assert len(Calculator.get_history()) == 0
+def test_history_method(calculator):
+    calculator.add(1, 2)
+    assert len(calculator.get_history()) == 1
+    calculator.clear_history()
+    assert len(calculator.get_history()) == 0
 
-def test_last_calculation():
-    """
-    Test the get_last_calculation method of the Calculator class.
-    """
-    Calculator.clear_history()
-    x = fake.random_number(digits=5)
-    y = fake.random_number(digits=5)
-    Calculator.add(x, y)
-    last_calc = Calculator.get_last_calculation()
+def test_last_calculation_method(calculator):
+    calculator.add(3, 3)
+    last_calc = calculator.get_last_calculation()
     assert last_calc is not None
-    assert last_calc.result == x + y
+    assert last_calc['result'] == 6
 
-def test_calculation_get_details():
-    """
-    Test the get_details method of the Calculation class.
-    """
-    x = fake.random_number(digits=5)
-    y = fake.random_number(digits=5)
-    calc = Calculation("+", x, y, x + y)
-    details = calc.get_details()
-    assert details == ("+", x, y, x + y)
+def test_save_and_load_history_method(calculator, tmpdir):
+    calculator.add(1, 1)
+    calculator.add(2, 2)
+    file_path = tmpdir.join("history.csv")
+    calculator.save_history_to_csv(file_path)
+    calculator.clear_history()
+    assert len(calculator.get_history()) == 0
+    calculator.load_history_from_csv(file_path)
+    assert len(calculator.get_history()) == 2
+    last_calc = calculator.get_last_calculation()
+    assert last_calc['result'] == 4
 
-def test_calculation_repr():
-    """
-    Test the __repr__ method of the Calculation class.
-    """
-    x = fake.random_number(digits=5)
-    y = fake.random_number(digits=5)
-    calc = Calculation("+", x, y, x + y)
-    expected_repr = f"{x} + {y} = {x + y}"
-    assert repr(calc) == expected_repr
+# Test command classes
+def test_add_command(calculator):
+    command = AddCommand(calculator)
+    result = command.execute(3, 2)
+    assert result == 5
 
-def test_calculator_initialization():
-    """
-    Test the initialization of the Calculator class.
-    """
-    Calculator.clear_history()
-    assert len(Calculator.get_history()) == 0
+def test_subtract_command(calculator):
+    command = SubtractCommand(calculator)
+    result = command.execute(5, 3)
+    assert result == 2
 
-def test_get_last_calculation_empty():
-    """Test get_last_calculation when history is empty."""
-    Calculator.clear_history()
-    result = Calculator.get_last_calculation()
-    assert result is None
+def test_multiply_command(calculator):
+    command = MultiplyCommand(calculator)
+    result = command.execute(4, 3)
+    assert result == 12
+
+def test_divide_command(calculator):
+    command = DivideCommand(calculator)
+    result = command.execute(8, 2)
+    assert result == 4
+
+def test_divide_command_by_zero(calculator):
+    command = DivideCommand(calculator)
+    with pytest.raises(ValueError, match="Cannot divide by zero"):
+        command.execute(8, 0)
+
+def test_get_history_command(calculator):
+    calculator.add(1, 2)
+    command = GetHistoryCommand(calculator)
+    history = command.execute()
+    assert len(history) == 1
+    assert history.iloc[0]['result'] == 3
+
+def test_clear_history_command(calculator):
+    calculator.add(1, 2)
+    command = ClearHistoryCommand(calculator)
+    command.execute()
+    history = calculator.get_history()
+    assert len(history) == 0
+
+def test_get_last_calculation_command(calculator):
+    calculator.add(1, 2)
+    command = GetLastCalculationCommand(calculator)
+    last_calc = command.execute()
+    assert last_calc['result'] == 3

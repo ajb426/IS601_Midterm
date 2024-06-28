@@ -3,8 +3,11 @@ import logging
 import logging.config
 from dotenv import load_dotenv
 from calculator.plugin_manager import PluginManager
-from calculator.command import AddCommand, SubtractCommand, MultiplyCommand, DivideCommand, GetHistoryCommand, ClearHistoryCommand, GetLastCalculationCommand
+from calculator.command import AddCommand, SubtractCommand, MultiplyCommand, DivideCommand, GetHistoryCommand, ClearHistoryCommand, GetLastCalculationCommand, SaveHistoryCommand, LoadHistoryCommand
 from calculator.calculator import Calculator
+import warnings
+
+warnings.filterwarnings("ignore", category=FutureWarning, message=".*DataFrame concatenation with empty or all-NA entries.*")
 
 class CalculatorApp:
     def __init__(self):
@@ -67,13 +70,15 @@ class CalculatorApp:
 
     def initialize_default_commands(self):
         commands = {
-            'add': AddCommand(self.calculator),
+           'add': AddCommand(self.calculator),
             'subtract': SubtractCommand(self.calculator),
             'multiply': MultiplyCommand(self.calculator),
             'divide': DivideCommand(self.calculator),
             'history': GetHistoryCommand(self.calculator),
             'clear_history': ClearHistoryCommand(self.calculator),
-            'last': GetLastCalculationCommand(self.calculator)
+            'last': GetLastCalculationCommand(self.calculator),
+            'save_history': SaveHistoryCommand(self.calculator),
+            'load_history': LoadHistoryCommand(self.calculator)
         }
         logging.info("Default commands initialized: %s", list(commands.keys()))
         return commands

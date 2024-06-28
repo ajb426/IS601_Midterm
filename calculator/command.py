@@ -1,7 +1,3 @@
-"""
-Command module for the calculator application. Defines commands for various arithmetic operations.
-"""
-
 from abc import ABC, abstractmethod
 from calculator.calculator import Calculator
 
@@ -63,14 +59,12 @@ class SaveHistoryCommand(Command):
     def __init__(self, calculator):
         self.calculator = calculator
 
-    def execute(self, *args):
-        file_path = " ".join(args)
+    def execute(self, file_path):
         self.calculator.save_history_to_csv(file_path)
 
 class LoadHistoryCommand(Command):
     def __init__(self, calculator):
         self.calculator = calculator
 
-    def execute(self, *args):
-        file_path = " ".join(args)
+    def execute(self, file_path):
         self.calculator.load_history_from_csv(file_path)

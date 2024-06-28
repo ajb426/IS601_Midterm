@@ -17,7 +17,7 @@ class CalculatorApp:
         self.configure_logging()
         self.settings.setdefault('ENVIRONMENT', 'PRODUCTION')
         self.calculator = Calculator()
-        self.commands = self.initialize_default_commands()
+        self.commands = {}
         self.plugin_manager = PluginManager(self.commands, self.calculator)
         self.load_plugins()
 
@@ -66,22 +66,6 @@ class CalculatorApp:
 
         logging.info("Logging configured. Debug mode: %s", debug_mode)
         logging.info("Log output path: %s", log_output_path)
-
-
-    def initialize_default_commands(self):
-        commands = {
-           'add': AddCommand(self.calculator),
-            'subtract': SubtractCommand(self.calculator),
-            'multiply': MultiplyCommand(self.calculator),
-            'divide': DivideCommand(self.calculator),
-            'history': GetHistoryCommand(self.calculator),
-            'clear_history': ClearHistoryCommand(self.calculator),
-            'last': GetLastCalculationCommand(self.calculator),
-            'save_history': SaveHistoryCommand(self.calculator),
-            'load_history': LoadHistoryCommand(self.calculator)
-        }
-        logging.info("Default commands initialized: %s", list(commands.keys()))
-        return commands
 
     def load_plugins(self):
         self.plugin_manager.load_plugins()

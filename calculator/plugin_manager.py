@@ -1,12 +1,9 @@
-"""
-Plugin Manager module for loading calculator command plugins dynamically.
-"""
-
 import os
 import importlib
 import inspect
 from calculator.command import Command
 import logging
+from calculator.factory import CommandFactory
 
 class PluginManager:
     """
@@ -18,7 +15,7 @@ class PluginManager:
 
         Args:
             command_dict (dict): Dictionary to store the loaded commands.
-            calculator (Calculator): Instance of the Calculator class.
+            calculator (Calculator): The calculator instance to pass to command factories.
         """
         self.command_dict = command_dict
         self.calculator = calculator
@@ -33,16 +30,15 @@ class PluginManager:
                 module_name = filename[:-3]
                 module = importlib.import_module(f"calculator.plugins.{module_name}")
                 for name, obj in module.__dict__.items():
-                    if isinstance(obj, type) and issubclass(obj, Command) and obj != Command:
-                        # Simplify command name
-                        command_name = name.lower().replace('command', '')
-                        init_params = inspect.signature(obj.__init__).parameters
-                        if 'calculator' in init_params:
-                            self.command_dict[command_name] = obj(self.calculator)
-                        elif 'command_dict' in init_params:
-                            self.command_dict[command_name] = obj(self.command_dict)
+                    print(name)
+                    if isinstance(obj, type) and issubclass(obj, CommandFactory) and obj != CommandFactory:
+                        factory = obj()
+                        if 'command_dict' in inspect.signature(factory.create_command).parameters:
+                            command = factory.create_command(self.command_dict)
                         else:
-                            self.command_dict[command_name] = obj()
+                            command = factory.create_command(self.calculator)
+                        command_name = name.lower().replace('factory', '').replace('command', '')
+                        self.command_dict[command_name] = command
                         loaded_commands.append(command_name)
         if loaded_commands:
             logging.info(f"Loaded plugin commands: {loaded_commands}")

@@ -3,35 +3,65 @@ import logging
 import logging.config
 from dotenv import load_dotenv
 from calculator.plugin_manager import PluginManager
-from calculator.command import AddCommand, SubtractCommand, MultiplyCommand, DivideCommand, GetHistoryCommand, ClearHistoryCommand, GetLastCalculationCommand, SaveHistoryCommand, LoadHistoryCommand
+from calculator.command import AddCommand, SubtractCommand, MultiplyCommand, DivideCommand, GetHistoryCommand, ClearHistoryCommand, GetLastCalculationCommand
 from calculator.calculator import Calculator
-
 
 class CalculatorApp:
     def __init__(self):
         os.makedirs('logs', exist_ok=True)
-        self.configure_logging()
         load_dotenv()
         self.settings = self.load_environment_variables()
+        self.configure_logging()
         self.settings.setdefault('ENVIRONMENT', 'PRODUCTION')
         self.calculator = Calculator()
         self.commands = self.initialize_default_commands()
         self.plugin_manager = PluginManager(self.commands, self.calculator)
         self.load_plugins()
 
-    def configure_logging(self):
-        logging_conf_path = 'logging.conf'
-        if os.path.exists(logging_conf_path):
-            logging.config.fileConfig(logging_conf_path, disable_existing_loggers=False)
-        else:
-            logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-        logging.info("Logging configured.")
-
     def load_environment_variables(self):
         settings = {key: value for key, value in os.environ.items()}
-        logging.info("Environment variables loaded.")
         return settings
-    
+
+    def configure_logging(self):
+        log_output_path = self.settings.get('LOG_OUTPUT_PATH', 'logs/app.log')
+        debug_mode = self.settings.get('DEBUG', 'false').lower() == 'true'
+
+        logging_config = {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'formatters': {
+                'default': {
+                    'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    'datefmt': '%Y-%m-%d %H:%M:%S',
+                },
+            },
+            'handlers': {
+                'file': {
+                    'level': 'DEBUG',
+                    'class': 'logging.handlers.RotatingFileHandler',
+                    'formatter': 'default',
+                    'filename': log_output_path,
+                    'mode': 'a',
+                    'maxBytes': 1048576,
+                    'backupCount': 5,
+                },
+                'console': {
+                    'level': 'DEBUG' if debug_mode else 'INFO',
+                    'class': 'logging.StreamHandler',
+                    'formatter': 'default',
+                },
+            },
+            'root': {
+                'level': 'DEBUG',
+                'handlers': ['file', 'console'] if debug_mode else ['file'],
+            },
+        }
+
+        logging.config.dictConfig(logging_config)
+
+        logging.info("Logging configured. Debug mode: %s", debug_mode)
+        logging.info("Log output path: %s", log_output_path)
+
     def initialize_default_commands(self):
         commands = {
             'add': AddCommand(self.calculator),
@@ -40,9 +70,7 @@ class CalculatorApp:
             'divide': DivideCommand(self.calculator),
             'history': GetHistoryCommand(self.calculator),
             'clear_history': ClearHistoryCommand(self.calculator),
-            'last': GetLastCalculationCommand(self.calculator),
-            'save_history': SaveHistoryCommand(self.calculator),
-            'load_history': LoadHistoryCommand(self.calculator)
+            'last': GetLastCalculationCommand(self.calculator)
         }
         logging.info("Default commands initialized: %s", list(commands.keys()))
         return commands

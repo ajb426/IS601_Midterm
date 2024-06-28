@@ -24,6 +24,8 @@ class CalculatorApp:
 
     def configure_logging(self):
         log_output_path = self.settings.get('LOG_OUTPUT_PATH', 'logs/app.log')
+        log_dir = os.path.dirname(log_output_path)
+        os.makedirs(log_dir, exist_ok=True)  # Ensure the log directory exists
         debug_mode = self.settings.get('DEBUG', 'false').lower() == 'true'
 
         logging_config = {
@@ -61,6 +63,7 @@ class CalculatorApp:
 
         logging.info("Logging configured. Debug mode: %s", debug_mode)
         logging.info("Log output path: %s", log_output_path)
+
 
     def initialize_default_commands(self):
         commands = {

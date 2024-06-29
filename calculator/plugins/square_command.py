@@ -1,5 +1,5 @@
-from calculator.command import Command
-from calculator.factory import CommandFactory
+from calculator.command import Command, CommandFactory
+
 
 class SquareCommand(Command):
     def __init__(self, calculator):

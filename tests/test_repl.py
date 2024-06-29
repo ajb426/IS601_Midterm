@@ -1,7 +1,7 @@
 import pytest
 from calculator.repl import CalculatorREPL
 from calculator.calculator import Calculator
-from calculator.command import AddCommand, SubtractCommand, MultiplyCommand, DivideCommand, GetHistoryCommand, ClearHistoryCommand, GetLastCalculationCommand, Command
+from calculator.plugin_manager import PluginManager
 from unittest.mock import MagicMock
 import pandas as pd
 
@@ -14,15 +14,10 @@ def setup(calculator):
     calculator.clear_history()  # Ensure history is clear before each test
 
 def initialize_default_commands(calculator):
-    return {
-        'add': AddCommand(calculator),
-        'subtract': SubtractCommand(calculator),
-        'multiply': MultiplyCommand(calculator),
-        'divide': DivideCommand(calculator),
-        'history': GetHistoryCommand(calculator),
-        'clear_history': ClearHistoryCommand(calculator),
-        'last': GetLastCalculationCommand(calculator)
-    }
+    commands = {}
+    plugin_manager = PluginManager(commands, calculator)
+    plugin_manager.load_plugins()
+    return commands
 
 def test_repl_start(capfd, monkeypatch, calculator):
     """Test that the REPL exits correctly on 'exit' command."""

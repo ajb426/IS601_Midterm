@@ -1,5 +1,5 @@
-from calculator.command import Command
-from calculator.factory import CommandFactory
+from calculator.command import Command, CommandFactory
+
 
 class MenuCommand(Command):
     def __init__(self, command_dict):

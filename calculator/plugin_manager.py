@@ -1,46 +1,29 @@
+# tests/test_plugin_manager.py
+
 import os
-import importlib
-import inspect
-from calculator.command import Command
-import logging
-from calculator.factory import CommandFactory
+import sys
+import pytest
+from unittest.mock import patch
+from calculator.plugin_manager import PluginManager
+from calculator.calculator import Calculator
 
-class PluginManager:
-    """
-    Manages loading of command plugins for the calculator.
-    """
-    def __init__(self, command_dict, calculator):
-        """
-        Initializes the PluginManager with a dictionary of commands and a calculator instance.
+# Ensure the tests/plugins directory is in the path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'plugins')))
 
-        Args:
-            command_dict (dict): Dictionary to store the loaded commands.
-            calculator (Calculator): The calculator instance to pass to command factories.
-        """
-        self.command_dict = command_dict
-        self.calculator = calculator
+# Mocking os.listdir to simulate plugins directory
+@patch('os.listdir', return_value=['dummy_plugin.py'])
+def test_load_plugins(mock_listdir):
+    command_dict = {}
+    calculator = Calculator()
+    plugin_manager = PluginManager(command_dict, calculator)
+    plugin_manager.load_plugins('tests/plugins')
 
-    def load_plugins(self, plugin_folder='calculator/plugins'):
-        """
-        Loads plugins from the plugins directory and updates the command dictionary.
-        """
-        loaded_commands = []
-        for filename in os.listdir(plugin_folder):
-            if filename.endswith(".py"):
-                module_name = filename[:-3]
-                module = importlib.import_module(f"calculator.plugins.{module_name}")
-                for name, obj in module.__dict__.items():
-                    print(name)
-                    if isinstance(obj, type) and issubclass(obj, CommandFactory) and obj != CommandFactory:
-                        factory = obj()
-                        if 'command_dict' in inspect.signature(factory.create_command).parameters:
-                            command = factory.create_command(self.command_dict)
-                        else:
-                            command = factory.create_command(self.calculator)
-                        command_name = name.lower().replace('factory', '').replace('command', '')
-                        self.command_dict[command_name] = command
-                        loaded_commands.append(command_name)
-        if loaded_commands:
-            logging.info(f"Loaded plugin commands: {loaded_commands}")
-        else:
-            logging.info("No plugin commands loaded.")
+    # Verify that plugins are loaded correctly
+    assert 'dummyadd' in command_dict
+    assert 'dummysubtract' in command_dict
+    assert isinstance(command_dict['dummyadd'], Command)
+    assert isinstance(command_dict['dummysubtract'], Command)
+
+    # Further verify the commands work as expected
+    assert command_dict['dummyadd'].execute(3, 2) == 5
+    assert command_dict['dummysubtract'].execute(5, 3) == 2

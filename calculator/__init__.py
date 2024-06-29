@@ -3,7 +3,6 @@ import logging
 import logging.config
 from dotenv import load_dotenv
 from calculator.plugin_manager import PluginManager
-from calculator.command import AddCommand, SubtractCommand, MultiplyCommand, DivideCommand, GetHistoryCommand, ClearHistoryCommand, GetLastCalculationCommand, SaveHistoryCommand, LoadHistoryCommand
 from calculator.calculator import Calculator
 import warnings
 

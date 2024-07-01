@@ -98,7 +98,7 @@ def test_repl_history_command(capfd, monkeypatch, calculator):
 
 def test_repl_clear_history_command(capfd, monkeypatch, calculator):
     """Test the REPL clear_history command."""
-    inputs = iter(['add 1 2', 'clear_history', 'history', 'exit'])
+    inputs = iter(['add 1 2', 'clearhistory', 'history', 'exit'])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
     repl = CalculatorREPL(initialize_default_commands(calculator))
     repl.start()
@@ -110,7 +110,7 @@ def test_repl_clear_history_command(capfd, monkeypatch, calculator):
 
 def test_repl_last_command(capfd, monkeypatch, calculator):
     """Test the REPL last command."""
-    inputs = iter(['add 1 2', 'last', 'exit'])
+    inputs = iter(['add 1 2', 'getlastcalculation', 'exit'])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
     repl = CalculatorREPL(initialize_default_commands(calculator))
     repl.start()

@@ -44,16 +44,16 @@ class DivideCommandFactory(CommandFactory):
     def create_command(self, calculator):
         return DivideCommand(calculator)
 
-class GetHistoryCommand(Command):
+class HistoryCommand(Command):
     def __init__(self, calculator):
         self.calculator = calculator
 
     def execute(self):
         return self.calculator.get_history()
 
-class GetHistoryCommandFactory(CommandFactory):
+class HistoryCommandFactory(CommandFactory):
     def create_command(self, calculator):
-        return GetHistoryCommand(calculator)
+        return HistoryCommand(calculator)
 
 class ClearHistoryCommand(Command):
     def __init__(self, calculator):

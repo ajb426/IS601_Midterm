@@ -1,0 +1,35 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-8.2.1, pluggy-1.5.0 -- /home/ajb426/projects/IS601_Midterm/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/ajb426/projects/IS601_Midterm
+configfile: pytest.ini
+testpaths: tests
+plugins: Faker-25.8.0, pylint-0.21.0, cov-5.0.0
+collecting ... collected 24 items
+
+tests/test_calculator.py::test_add_method PASSED                         [  4%]
+tests/test_calculator.py::test_subtract_method PASSED                    [  8%]
+tests/test_calculator.py::test_multiply_method PASSED                    [ 12%]
+tests/test_calculator.py::test_divide_method PASSED                      [ 16%]
+tests/test_calculator.py::test_divide_by_zero_method PASSED              [ 20%]
+tests/test_calculator.py::test_history_method PASSED                     [ 25%]
+tests/test_calculator.py::test_last_calculation_method PASSED            [ 29%]
+tests/test_calculator.py::test_save_and_load_history_method PASSED       [ 33%]
+tests/test_calculator_init.py::test_configure_logging PASSED             [ 37%]
+tests/test_calculator_init.py::test_start PASSED                         [ 41%]
+tests/test_plugin_manager.py::test_load_plugins PASSED                   [ 45%]
+tests/test_plugin_manager.py::test_dummy_plugins_execution PASSED        [ 50%]
+tests/test_repl.py::test_repl_start PASSED                               [ 54%]
+tests/test_repl.py::test_repl_add_command PASSED                         [ 58%]
+tests/test_repl.py::test_repl_subtract_command PASSED                    [ 62%]
+tests/test_repl.py::test_repl_multiply_command PASSED                    [ 66%]
+tests/test_repl.py::test_repl_divide_command PASSED                      [ 70%]
+tests/test_repl.py::test_repl_divide_by_zero PASSED                      [ 75%]
+tests/test_repl.py::test_repl_history_command PASSED                     [ 79%]
+tests/test_repl.py::test_repl_clear_history_command PASSED               [ 83%]
+tests/test_repl.py::test_repl_last_command PASSED                        [ 87%]
+tests/test_repl.py::test_unknown_command PASSED                          [ 91%]
+tests/test_repl.py::test_repl_empty_input PASSED                         [ 95%]
+tests/test_repl.py::test_repl_type_error PASSED                          [100%]
+
+============================== 24 passed in 0.61s ==============================

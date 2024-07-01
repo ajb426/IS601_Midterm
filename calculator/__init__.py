@@ -24,47 +24,51 @@ class CalculatorApp:
         settings = {key: value for key, value in os.environ.items()}
         return settings
 
-    def configure_logging(self):
-        log_output_path = self.settings.get('LOG_OUTPUT_PATH', 'logs/app.log')
-        log_dir = os.path.dirname(log_output_path)
-        os.makedirs(log_dir, exist_ok=True)  # Ensure the log directory exists
-        debug_mode = self.settings.get('DEBUG', 'false').lower() == 'true'
+    def configure_logging(self, logging_config=None):
+        if logging_config is None:
+            log_output_path = self.settings.get('LOG_OUTPUT_PATH', 'logs/app.log')
+            log_dir = os.path.dirname(log_output_path)
+            os.makedirs(log_dir, exist_ok=True)  # Ensure the log directory exists
+            debug_mode = self.settings.get('DEBUG', 'false').lower() == 'true'
 
-        logging_config = {
-            'version': 1,
-            'disable_existing_loggers': False,
-            'formatters': {
-                'default': {
-                    'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    'datefmt': '%Y-%m-%d %H:%M:%S',
+            logging_config = {
+                'version': 1,
+                'disable_existing_loggers': False,
+                'formatters': {
+                    'default': {
+                        'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                        'datefmt': '%Y-%m-%d %H:%M:%S',
+                    },
                 },
-            },
-            'handlers': {
-                'file': {
+                'handlers': {
+                    'file': {
+                        'level': 'DEBUG',
+                        'class': 'logging.handlers.RotatingFileHandler',
+                        'formatter': 'default',
+                        'filename': log_output_path,
+                        'mode': 'a',
+                        'maxBytes': 1048576,
+                        'backupCount': 5,
+                    },
+                    'console': {
+                        'level': 'DEBUG' if debug_mode else 'INFO',
+                        'class': 'logging.StreamHandler',
+                        'formatter': 'default',
+                    },
+                },
+                'root': {
                     'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'formatter': 'default',
-                    'filename': log_output_path,
-                    'mode': 'a',
-                    'maxBytes': 1048576,
-                    'backupCount': 5,
+                    'handlers': ['file', 'console'] if debug_mode else ['file'],
                 },
-                'console': {
-                    'level': 'DEBUG' if debug_mode else 'INFO',
-                    'class': 'logging.StreamHandler',
-                    'formatter': 'default',
-                },
-            },
-            'root': {
-                'level': 'DEBUG',
-                'handlers': ['file', 'console'] if debug_mode else ['file'],
-            },
-        }
+            }
 
         logging.config.dictConfig(logging_config)
 
+        # Determine debug_mode based on logging_config
+        debug_mode = logging_config['handlers'].get('console', {}).get('level') == 'DEBUG'
+
         logging.info("Logging configured. Debug mode: %s", debug_mode)
-        logging.info("Log output path: %s", log_output_path)
+        logging.info("Log output path: %s", logging_config['handlers']['file']['filename'])
 
     def load_plugins(self):
         self.plugin_manager.load_plugins()

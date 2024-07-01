@@ -1,3 +1,7 @@
+"""
+This module provides a thread-safe Singleton implementation using metaclasses.
+"""
+
 class SingletonMeta(type):
     """
     This is a thread-safe implementation of Singleton.

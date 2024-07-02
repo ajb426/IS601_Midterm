@@ -41,7 +41,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. Create .env file in the project root directory specify the following variables:
+4. Create .env file in the project root directory specifying the following variables:
 
 DEBUG=true
 LOG_OUTPUT_PATH=logs/app.log

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Calculator Application is a robust and extensible calculator system designed to support various arithmetic operations and handle calculation history. This application is built using Python and implements several design patterns to ensure scalability, maintainability, and testability.
+This calculator application is a robust and extensible calculator system designed to support various arithmetic operations and handle calculation history. This application is built using Python and implements several design patterns to ensure scalability, maintainability, and testability.
 
 ## Features
 

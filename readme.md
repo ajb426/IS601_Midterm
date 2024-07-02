@@ -51,7 +51,7 @@ LOG_OUTPUT_PATH is the path in which the log file will be created and updated.
 
 ## Using The Calculator
 
-To start the calculator execute the following command:
+To start the calculator execute the following command from the project root directory:
 ```bash
 python -m calculator
 ```

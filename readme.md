@@ -319,3 +319,5 @@ def configure_logging(self, logging_config=None):
         logging.info("Log output path: %s", logging_config['handlers']['file']['filename'])
 ```
 
+## Video Demonstration
+Click here to see a video demonstration of the commands, environment variables, and logging: https://youtu.be/2tE0Xht-Mow

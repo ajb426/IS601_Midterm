@@ -64,7 +64,7 @@ The calculator has the following commands:
     Enter command: add 3 5
     Result: 8.0
 
-### Add Command
+### Subtract Command
 - **Syntax**: `subtract <float> <float>`
 - **Description**: Subtracts the second number from the first.
 - **Example**: 
